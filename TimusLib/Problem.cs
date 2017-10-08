@@ -7,9 +7,9 @@ namespace TimusLib
         public readonly string Id;
         public DateTime SolvedAt;
 
-        public Problem(string id)
+        public Problem(string problemId)
         {
-            Id = id;
+            Id = problemId;
         }
 
         private bool Equals(Problem other)

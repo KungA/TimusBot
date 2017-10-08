@@ -20,9 +20,9 @@ namespace TimusLib
 
                 var tokens = line.Split('\t');
                 var time = DateTime.Parse(tokens[1]);
-                var task = tokens[4];
+                var problemId = tokens[4];
 
-                result.Add(new Problem(task)
+                result.Add(new Problem(problemId)
                 {
                     SolvedAt = time
                 });
@@ -31,9 +31,9 @@ namespace TimusLib
             return result;
         }
 
-        public string GetTaskName(string taskId)
+        public string GetProblemName(string problemId)
         {
-            var text = WebHelper.DownloadPage($"http://acm.timus.ru/problem.aspx?num={taskId}&locale=ru");
+            var text = WebHelper.DownloadPage($"http://acm.timus.ru/problem.aspx?num={problemId}&locale=ru");
 
             int l = text.IndexOf("<TITLE>", StringComparison.Ordinal);
             int r = text.IndexOf("@ Timus Online Judge</TITLE>", StringComparison.Ordinal);
@@ -50,9 +50,9 @@ namespace TimusLib
             return int.Parse(count);
         }
 
-        public bool HasAc(string taskId, string userId)
+        public bool HasAc(string problemId, string userId)
         {
-            var text = WebHelper.DownloadPage($"http://acm.timus.ru/textstatus.aspx?space=1&num={taskId}&author={userId}&status=accepted");
+            var text = WebHelper.DownloadPage($"http://acm.timus.ru/textstatus.aspx?space=1&num={problemId}&author={userId}&status=accepted");
             var lines = text.Split('\n');
             return lines.Length > 2;
         }

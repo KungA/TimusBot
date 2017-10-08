@@ -61,16 +61,16 @@ namespace TimusBot
 
                 UpdateUser(user, newSolvedProblems);
 
-                foreach (var task in newSolvedProblems.Distinct())
+                foreach (var problem in newSolvedProblems.Distinct())
                 {
                     var action = user.Name.StartsWith("Аня") ? "сдала" : "сдал";
-                    var message = $"{user.Name} {action} задачу {task.Id} [{timus.GetTaskName(task.Id)}](http://acm.timus.ru/problem.aspx?num={task.Id}) ";
+                    var message = $"{user.Name} {action} задачу {problem.Id} [{timus.GetProblemName(problem.Id)}](http://acm.timus.ru/problem.aspx?num={problem.Id}) ";
 
                     var solved = user.SolvedCount;
                     if (solved % 10 == 0)
                         message += $"\nУже {solved} 👍";
 
-                    message += "\n" + WhoSolved(users, task.Id);
+                    message += "\n" + WhoSolved(users, problem.Id);
                     await bot.SendTextMessageAsync(chatId, message, ParseMode.Markdown);
                     log.Info($"SENT {message} to {chatId}");
 
@@ -83,19 +83,19 @@ namespace TimusBot
             }
         }
 
-        private void UpdateUser(User user, List<Problem> solvedTasks)
+        private void UpdateUser(User user, List<Problem> solvedProblems)
         {
             user.SolvedCount = timus.GetSolvedCount(user.Id);
-            if (solvedTasks.Any())
-                user.LastSolverProblemTime = solvedTasks.Max(x => x.SolvedAt);
+            if (solvedProblems.Any())
+                user.LastSolverProblemTime = solvedProblems.Max(x => x.SolvedAt);
         }
 
-        private string WhoSolved(List<User> users, string task)
+        private string WhoSolved(List<User> users, string problemId)
         {
             var result = "";
             foreach (var user in users)
             {
-                if (timus.HasAc(task, user.Id))
+                if (timus.HasAc(problemId, user.Id))
                     result += user.Name.Substring(user.Name.Length - 2);
             }
             if (result.Length == 2)
