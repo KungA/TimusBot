@@ -78,7 +78,7 @@ namespace TimusBot
         private async Task SendMessage(List<User> users, User user, Submit submit)
         {
             var action = user.Name.StartsWith("Аня") ? "сдала" : "сдал";
-            var message = $"{user.Name} {action} задачу {submit.ProblemId} [{timus.GetProblemName(submit.ProblemId)}](http://acm.timus.ru/problem.aspx?num={submit.ProblemId}) ";
+            var message = $"{user.Name} {action} задачу {submit.ProblemId} [{timus.GetProblemName(submit.ProblemId)}](http://timus.online/problem.aspx?num={submit.ProblemId}) ";
 
             var solved = user.SolvedCount;
             if (solved % 10 == 0)
