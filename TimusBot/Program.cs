@@ -1,15 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
+using TimusLib;
 
 namespace TimusBot
 {
-    class Program
+    static class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
+            Logger.InitLogger();
+
+            while (true)
+            {
+                try
+                {
+                    new Bot().Run().Wait();
+                }
+                catch (Exception e)
+                {
+                    Logger.Log.Error("FAILED-TO-RUN-BOT", e);
+                    Thread.Sleep(TimeSpan.FromMinutes(1));
+                }
+            }
         }
     }
 }

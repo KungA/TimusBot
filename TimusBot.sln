@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimusBot", "TimusBot\TimusBot.csproj", "{1AAAF8F1-7DBA-40A4-AA87-E6B64DB3F04A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimusLib", "TimusLib\TimusLib.csproj", "{8CDC08BE-D7EA-4CE2-B875-B2D07E086EDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{1AAAF8F1-7DBA-40A4-AA87-E6B64DB3F04A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1AAAF8F1-7DBA-40A4-AA87-E6B64DB3F04A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1AAAF8F1-7DBA-40A4-AA87-E6B64DB3F04A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CDC08BE-D7EA-4CE2-B875-B2D07E086EDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CDC08BE-D7EA-4CE2-B875-B2D07E086EDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CDC08BE-D7EA-4CE2-B875-B2D07E086EDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CDC08BE-D7EA-4CE2-B875-B2D07E086EDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
