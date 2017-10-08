@@ -6,9 +6,11 @@ namespace TimusLib
 {
     public class TimusClient
     {
+        public string Host = "http://timus.online";
+
         public List<Submit> GetSubmits(string userId, string problemId = null)
         {
-            var uri = $@"http://timus.online/textstatus.aspx?space=1&author={userId}&status=accepted&count=100";
+            var uri = $@"{Host}/textstatus.aspx?space=1&author={userId}&status=accepted&count=100";
             if (problemId != null)
                 uri += $"&num={problemId}";
 
@@ -25,7 +27,7 @@ namespace TimusLib
 
         public string GetProblemName(string problemId)
         {
-            var text = WebHelper.DownloadPage($"http://timus.online/problem.aspx?num={problemId}&locale=ru");
+            var text = WebHelper.DownloadPage($"{Host}/problem.aspx?num={problemId}&locale=ru");
 
             int l = text.IndexOf("<TITLE>", StringComparison.Ordinal);
             int r = text.IndexOf("@ Timus Online Judge</TITLE>", StringComparison.Ordinal);
@@ -35,7 +37,7 @@ namespace TimusLib
 
         public int GetSolvedCount(string userId)
         {
-            var text = WebHelper.DownloadPage($"http://timus.online/author.aspx?id={userId}&locale=ru");
+            var text = WebHelper.DownloadPage($"{Host}/author.aspx?id={userId}&locale=ru");
             int l = text.IndexOf("Решено задач", StringComparison.Ordinal);
             int r = text.IndexOf(" из", l, StringComparison.Ordinal);
             var count = text.Substring(l + 48, r - l - 48);
