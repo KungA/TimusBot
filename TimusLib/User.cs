@@ -7,7 +7,7 @@ namespace TimusLib
         public string Name;
         public string Id;
 
-        public DateTime LastSolverProblemTime;
+        public DateTime LastSolvedProblemTime;
         public int SolvedCount { get; set; }
 
         public override string ToString()

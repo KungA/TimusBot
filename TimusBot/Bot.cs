@@ -56,31 +56,35 @@ namespace TimusBot
         {
             foreach (var user in users)
             {
-                var newSolvedProblems = timus.GetLatestSolvedProblems(user)
-                    .Where(x => x.SolvedAt > user.LastSolverProblemTime)
+                var submits = timus.GetSubmits(user.Id)
+                    .Where(x => x.Timestamp > user.LastSolvedProblemTime)
                     .ToList();
 
-                UpdateUser(user, newSolvedProblems);
+                UpdateUser(user, submits);
 
-                foreach (var problem in newSolvedProblems.Distinct())
+                foreach (var submit in submits)
                 {
-                    await SendMessage(users, user, problem);
+                    var problemSubmits = timus.GetSubmits(user.Id, submit.ProblemId);
+                    if (problemSubmits.Any(s => s.Timestamp < submit.Timestamp))
+                        continue;
+
+                    await SendMessage(users, user, submit);
                 }
 
                 SaveBotState(users);
             }
         }
 
-        private async Task SendMessage(List<User> users, User user, Problem problem)
+        private async Task SendMessage(List<User> users, User user, Submit submit)
         {
             var action = user.Name.StartsWith("Аня") ? "сдала" : "сдал";
-            var message = $"{user.Name} {action} задачу {problem.Id} [{timus.GetProblemName(problem.Id)}](http://acm.timus.ru/problem.aspx?num={problem.Id}) ";
+            var message = $"{user.Name} {action} задачу {submit.ProblemId} [{timus.GetProblemName(submit.ProblemId)}](http://acm.timus.ru/problem.aspx?num={submit.ProblemId}) ";
 
             var solved = user.SolvedCount;
             if (solved % 10 == 0)
                 message += $"\nУже {solved} 👍";
 
-            message += "\n" + WhoSolved(users, problem.Id);
+            message += "\n" + WhoSolved(users, submit.ProblemId);
             await bot.SendTextMessageAsync(chatId, message, ParseMode.Markdown);
             log.Info($"SENT {message} to {chatId}");
 
@@ -90,11 +94,11 @@ namespace TimusBot
                 await bot.SendStickerAsync(chatId, new FileToSend("BQADAgADrgAD41AwAAENKAshbD_oQwI")); //ничосе
         }
 
-        private void UpdateUser(User user, List<Problem> solvedProblems)
+        private void UpdateUser(User user, List<Submit> submits)
         {
             user.SolvedCount = timus.GetSolvedCount(user.Id);
-            if (solvedProblems.Any())
-                user.LastSolverProblemTime = solvedProblems.Max(x => x.SolvedAt);
+            if (submits.Any())
+                user.LastSolvedProblemTime = submits.Max(x => x.Timestamp);
         }
 
         private string WhoSolved(List<User> users, string problemId)
@@ -102,7 +106,7 @@ namespace TimusBot
             var result = "";
             foreach (var user in users)
             {
-                if (timus.HasAc(problemId, user.Id))
+                if (timus.HasAc(user.Id, problemId))
                     result += user.Name.Substring(user.Name.Length - 2);
             }
             if (result.Length == 2)
@@ -128,7 +132,7 @@ namespace TimusBot
                 {
                     Id = tokens[1],
                     Name = tokens[0],
-                    LastSolverProblemTime = DateTime.Now.AddMinutes(-2),
+                    LastSolvedProblemTime = DateTime.Now.AddMinutes(-2),
                     SolvedCount = timus.GetSolvedCount(tokens[1])
                 };
                 users.Add(user);
@@ -150,7 +154,7 @@ namespace TimusBot
                 var json = File.ReadAllText(StateFileName());
                 return JsonConvert.DeserializeObject<List<User>>(json);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new List<User>();
             }

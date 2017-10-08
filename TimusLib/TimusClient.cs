@@ -6,29 +6,21 @@ namespace TimusLib
 {
     public class TimusClient
     {
-        public List<Problem> GetLatestSolvedProblems(User user)
+        public List<Submit> GetSubmits(string userId, string problemId = null)
         {
-            var result = new List<Problem>();
+            var uri = $@"http://acm.timus.ru/textstatus.aspx?space=1&author={userId}&status=accepted&count=100";
+            if (problemId != null)
+                uri += $"&num={problemId}";
 
-            var text = WebHelper.DownloadPage($@"http://acm.timus.ru/textstatus.aspx?author={user.Id}&status=accepted&count=100");
-            var lines = text.Split('\n').Skip(1).ToList();
+            var text = WebHelper.DownloadPage(uri);
+            var lines = text.Split(new [] {'\n'}, StringSplitOptions.RemoveEmptyEntries).Skip(1).ToList();
 
-            foreach (var line in lines)
-            {
-                if (string.IsNullOrEmpty(line))
-                    continue;
+            return lines.Select(Submit.Parse).ToList();
+        }
 
-                var tokens = line.Split('\t');
-                var time = DateTime.Parse(tokens[1]);
-                var problemId = tokens[4];
-
-                result.Add(new Problem(problemId)
-                {
-                    SolvedAt = time
-                });
-            }
-
-            return result;
+        public bool HasAc(string userId, string problemId)
+        {
+            return GetSubmits(userId, problemId).Any();
         }
 
         public string GetProblemName(string problemId)
@@ -48,13 +40,6 @@ namespace TimusLib
             int r = text.IndexOf(" из", l, StringComparison.Ordinal);
             var count = text.Substring(l + 48, r - l - 48);
             return int.Parse(count);
-        }
-
-        public bool HasAc(string problemId, string userId)
-        {
-            var text = WebHelper.DownloadPage($"http://acm.timus.ru/textstatus.aspx?space=1&num={problemId}&author={userId}&status=accepted");
-            var lines = text.Split('\n');
-            return lines.Length > 2;
         }
     }
 }
