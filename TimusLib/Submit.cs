@@ -4,7 +4,6 @@ namespace TimusLib
 {
     public class Submit
     {
-        public string SubmitId;
         public string ProblemId;
         public DateTime Timestamp;
 
