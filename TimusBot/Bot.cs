@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using log4net;
+using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -65,6 +66,8 @@ namespace TimusBot
                 {
                     await SendMessage(users, user, problem);
                 }
+
+                SaveBotState(users);
             }
         }
 
@@ -109,6 +112,10 @@ namespace TimusBot
 
         private List<User> GetUsers()
         {
+            var state = GetBotState();
+            if (state.Any())
+                return state;
+
             var users = new List<User>();
             var text = File.ReadAllText(
                 Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "timus_users.txt"));
@@ -128,6 +135,30 @@ namespace TimusBot
             }
 
             return users;
+        }
+
+        private void SaveBotState(List<User> users)
+        {
+            var json = JsonConvert.SerializeObject(users, Formatting.Indented);
+            File.WriteAllText(StateFileName(), json);
+        }
+
+        private List<User> GetBotState()
+        {
+            try
+            {
+                var json = File.ReadAllText(StateFileName());
+                return JsonConvert.DeserializeObject<List<User>>(json);
+            }
+            catch (Exception e)
+            {
+                return new List<User>();
+            }
+        }
+
+        private string StateFileName()
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TimusBotState.json");
         }
     }
 }
