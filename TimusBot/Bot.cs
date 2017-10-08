@@ -63,24 +63,28 @@ namespace TimusBot
 
                 foreach (var problem in newSolvedProblems.Distinct())
                 {
-                    var action = user.Name.StartsWith("Аня") ? "сдала" : "сдал";
-                    var message = $"{user.Name} {action} задачу {problem.Id} [{timus.GetProblemName(problem.Id)}](http://acm.timus.ru/problem.aspx?num={problem.Id}) ";
-
-                    var solved = user.SolvedCount;
-                    if (solved % 10 == 0)
-                        message += $"\nУже {solved} 👍";
-
-                    message += "\n" + WhoSolved(users, problem.Id);
-                    await bot.SendTextMessageAsync(chatId, message, ParseMode.Markdown);
-                    log.Info($"SENT {message} to {chatId}");
-
-
-                    if (solved == 1000)
-                        await bot.SendStickerAsync(chatId, new FileToSend("BQADAgADFQADkZ2hB9unroIFwbsCAg")); //ого
-                    else if (solved % 100 == 0)
-                        await bot.SendStickerAsync(chatId, new FileToSend("BQADAgADrgAD41AwAAENKAshbD_oQwI")); //ничосе
+                    await SendMessage(users, user, problem);
                 }
             }
+        }
+
+        private async Task SendMessage(List<User> users, User user, Problem problem)
+        {
+            var action = user.Name.StartsWith("Аня") ? "сдала" : "сдал";
+            var message = $"{user.Name} {action} задачу {problem.Id} [{timus.GetProblemName(problem.Id)}](http://acm.timus.ru/problem.aspx?num={problem.Id}) ";
+
+            var solved = user.SolvedCount;
+            if (solved % 10 == 0)
+                message += $"\nУже {solved} 👍";
+
+            message += "\n" + WhoSolved(users, problem.Id);
+            await bot.SendTextMessageAsync(chatId, message, ParseMode.Markdown);
+            log.Info($"SENT {message} to {chatId}");
+
+            if (solved == 1000)
+                await bot.SendStickerAsync(chatId, new FileToSend("BQADAgADFQADkZ2hB9unroIFwbsCAg")); //ого
+            else if (solved % 100 == 0)
+                await bot.SendStickerAsync(chatId, new FileToSend("BQADAgADrgAD41AwAAENKAshbD_oQwI")); //ничосе
         }
 
         private void UpdateUser(User user, List<Problem> solvedProblems)
